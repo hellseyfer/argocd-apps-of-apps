@@ -1,3 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-nginx
+  labels:
+    environment: dev
+---
 {{- $fullName := include "fullName" . -}}
 {{- $namespace := include "namespace" . -}}
 {{- $hostName := include "hostName" . -}}
