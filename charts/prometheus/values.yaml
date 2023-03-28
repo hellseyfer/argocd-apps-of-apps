@@ -39,7 +39,3 @@ prometheus:
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
       probeSelectorNilUsesHelmValues: false
-      
-server:
-  nodeSelector:
-    nodePoolType: system

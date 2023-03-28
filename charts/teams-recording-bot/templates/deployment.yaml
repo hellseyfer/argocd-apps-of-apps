@@ -22,7 +22,7 @@ spec:
         app: {{ $fullName }}
     spec:
       nodeSelector:
-        "kubernetes.io/os": windows
+        nodePoolType: user
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -121,8 +121,6 @@ spec:
               fieldPath: metadata.name
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-      nodeSelector:
-        agentpool: {{ .Values.node.target }}
       volumes:
       - name: certificate
         secret:
