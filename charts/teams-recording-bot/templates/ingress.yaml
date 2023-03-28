@@ -45,6 +45,6 @@ spec:
           service:
             name: {{ $fullName }}-routing
             port:
-              number: 443
+              name: public
         path: /
         pathType: Prefix
