@@ -11,7 +11,7 @@ spec:
     namespace: argocd
   project: default
   source:
-    chart: charts/prometheus
+    path: charts/prometheus
     repoURL: {{ .Values.spec.source.repoURL }}
     targetRevision: HEAD
   syncPolicy:
