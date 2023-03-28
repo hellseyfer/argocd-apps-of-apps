@@ -1,3 +1,4 @@
+{{- $fullName := include "fullName" . -}}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -39,7 +40,7 @@ spec:
           mountPath: /config.yml
           subPath: config.yml
       nodeSelector:
-        nodePoolType: user
+        kubernetes.io/os: windows
       volumes:
       - name: windows-exporter-config
         configMap:
