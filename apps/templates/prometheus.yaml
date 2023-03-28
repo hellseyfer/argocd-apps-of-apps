@@ -13,7 +13,7 @@ spec:
   source:
     path: charts/prometheus
     repoURL: {{ .Values.spec.source.repoURL }}
-    targetRevision: HEAD
+    targetRevision: {{ .Values.spec.source.targetRevision }}
   syncPolicy:
     automated:
       prune: true
