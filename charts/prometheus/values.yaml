@@ -5,36 +5,36 @@ prometheus:
     admissionWebhooks:
       enabled: false
     nodeSelector:
-      kubernetes.io/os: linux
+      nodePoolType: system
 
   kube-state-metrics:
     nodeSelector:
-      kubernetes.io/os: linux
+      nodePoolType: system
 
   grafana:
     nodeSelector:
-      kubernetes.io/os: linux
+      nodePoolType: system
 
   prometheus-node-exporter:
     nodeSelector:
-      kubernetes.io/os: linux
+      nodePoolType: system
 
   alertmanager:
     alertmanagerSpec:
       nodeSelector:
-        kubernetes.io/os: linux
+        nodePoolType: system
 
   thanosRuler:
     thanosRulerSpec:
       nodeSelector:
-        kubernetes.io/os: linux
+        nodePoolType: system
       ruleSelectorNilUsesHelmValues: false
       
 
   prometheus:
     prometheusSpec:
       nodeSelector:
-        kubernetes.io/os: linux
+        nodePoolType: system
       podMonitorSelectorNilUsesHelmValues: false
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
