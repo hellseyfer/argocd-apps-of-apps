@@ -39,7 +39,7 @@ spec:
           mountPath: /config.yml
           subPath: config.yml
       nodeSelector:
-        kubernetes.io/os: windows
+        nodePoolType: user
       volumes:
       - name: windows-exporter-config
         configMap:
