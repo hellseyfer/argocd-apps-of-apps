@@ -1,0 +1,41 @@
+prometheus:
+  prometheusOperator:
+    tls:
+      enabled: false
+    admissionWebhooks:
+      enabled: false
+    nodeSelector:
+      kubernetes.io/os: linux
+
+  kube-state-metrics:
+    nodeSelector:
+      kubernetes.io/os: linux
+
+  grafana:
+    nodeSelector:
+      kubernetes.io/os: linux
+
+  prometheus-node-exporter:
+    nodeSelector:
+      kubernetes.io/os: linux
+
+  alertmanager:
+    alertmanagerSpec:
+      nodeSelector:
+        kubernetes.io/os: linux
+
+  thanosRuler:
+    thanosRulerSpec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      ruleSelectorNilUsesHelmValues: false
+      
+
+  prometheus:
+    prometheusSpec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      podMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
