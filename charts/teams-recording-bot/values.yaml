@@ -33,6 +33,7 @@ serviceAccount:
 service:
   type: ClusterIP
   port: 80
+  containerPort: 3000
 #name: hello-world-ingress
 ingresses:
 - name: teams-recording-bot-ing
