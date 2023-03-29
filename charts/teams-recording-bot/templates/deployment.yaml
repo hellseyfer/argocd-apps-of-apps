@@ -4,7 +4,7 @@
 {{- range $deployment := .Values.deployments }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ $deployment.kind }}
 metadata:
   name: {{ $deployment.name }}
 spec:
