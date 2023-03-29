@@ -41,13 +41,13 @@ ingresses:
   className: nginx
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/use-regex: "true"
+  # nginx.ingress.kubernetes.io/use-regex: "true"
   # kubernetes.io/ingress.class: nginx
   # kubernetes.io/tls-acme: "true"
   hosts:
   - host: "juantest.aksfordummies.teamstx.co"
     paths:
-    - path: /(.*)
+    - path: /
       pathType: Prefix
       serviceName: teams-recording-bot-svc
       portName: http
