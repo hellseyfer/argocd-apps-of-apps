@@ -1,59 +1,85 @@
-override:
-  name: ""
-  namespace: ""
+# Default values for mychart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-scale:
-  maxReplicaCount: 4
-  replicaCount: 3
-
-host: "juantest.aksfordummies.teamstx.co"
-
+replicaCount: 1
 image:
-  domain: juank8stestacr.azurecr.io
-  pullPolicy: Always # IfNotPresent
+  repository: juank8stestacr.azurecr.io/teams-recording-bot
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  #annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  #podAnnotations: {}
+#podSecurityContext: {}
+# fsGroup: 2000
 
-ingress:
-  tls:
-    secretName: ingress-tls
+#securityContext: {}
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+service:
+  type: ClusterIP
+  port: 80
+#name: hello-world-ingress
+ingresses:
+- name: mychart-ingress
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+  - host: "juantest.aksfordummies.teamstx.co"
+    paths:
+    - path: /(.*)
+      pathType: Prefix
+      serviceName: teams-recording-bot-svc
+      portName: http
+  tls: []
 
-autoscaling:
-  enabled: false
+deployments:
+- name: "teams-recording-bot"
+  replicas: 1
+services:
+- name: teams-recording-bot-svc
+  isHeadless: true
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+  selector:
+    app: teams-recording-bot
 
-internal:
-  port: 9441
-  media: 8445
-
-public:
-  media: 28550
-
-node:
-  target: win
-
-terminationGracePeriod: 54000
-
-container:
-  env:
-    azureSetting:
-      captureEvents: false
-      eventsFolder: events
-      mediaFolder: archive
-      eventhubKey: ""
-      eventhubName: recordingbotevents
-      eventhubRegion: ""
-      isStereo: false
-      wavSampleRate: 0 # when it is 0, the default sample rate will be set per the stereo flag setting above
-      wavQuality: 100
-  port: 9441
-
-resources: 
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#resources: {}
+resources:
+  requests:
+    cpu: 250m
+    memory: 64Mi
   limits:
     cpu: 500m
-    memory: 128Mi
-  requests:
-    cpu: 300m
-    memory: 128Mi
+    memory: 256Mi
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+nodeSelector:
+  nodePoolType: user
+tolerations: []
+#affinity: {}

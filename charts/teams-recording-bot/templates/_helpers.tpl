@@ -1,39 +1,62 @@
-{{/* Default deployment name */}}
-{{- define "fullName" -}}
-  {{- default .Chart.Name .Values.override.name -}}
-{{- end -}}
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "test-chart.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
 
-{{/* Default namespace */}}
-{{- define "namespace" -}}
-  {{- default (include "fullName" .) .Values.override.namespace -}}
-{{- end -}}
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "test-chart.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
 
-{{/* Check replicaCount is less than maxReplicaCount */}}
-{{- define "maxCount" -}}
-  {{- if lt (int .Values.scale.maxReplicaCount) 1 -}}
-    {{- fail "scale.maxReplicaCount cannot be less than 1" -}}
-  {{- end -}}
-  {{- if gt (int .Values.scale.replicaCount) (int .Values.scale.maxReplicaCount) -}}
-    {{- fail "scale.replicaCount cannot be greater than scale.maxReplicaCount" -}}
-  {{- else -}}
-    {{- printf "%d" (int .Values.scale.maxReplicaCount) -}}
-  {{- end -}}
-{{- end -}}
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "test-chart.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
 
-{{/* Check if host is set */}}
-{{- define "hostName" -}}
-  {{- if .Values.host -}}
-    {{- printf "%s" .Values.host -}}
-  {{- else -}}
-    {{- fail "You need to specify a host" -}}
-  {{- end -}}
-{{- end -}}
+{{/*
+Common labels
+*/}}
+{{- define "test-chart.labels" -}}
+helm.sh/chart: {{ include "test-chart.chart" . }}
+{{ include "test-chart.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
 
-{{/* Check if image.domain is set */}}
-{{- define "imageDomain" -}}
-  {{- if .Values.image.domain -}}
-    {{- printf "%s" .Values.image.domain -}}
-  {{- else -}}
-    {{- fail "You need to specify image.domain" -}}
-  {{- end -}}
-{{- end -}}
+{{/*
+Selector labels
+*/}}
+{{- define "test-chart.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "test-chart.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "test-chart.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "test-chart.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}

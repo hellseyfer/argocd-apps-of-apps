@@ -1,51 +1,73 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ingress-nginx
-  labels:
-    environment: dev
+# save the original value of .
+{{- $top := . -}}
+{{- $fullName := include "test-chart.fullname" . -}}
+# iterate over the ingress configurations
+{{- range $ingress := .Values.ingresses }}
 ---
-{{- $fullName := include "fullName" . -}}
-{{- $namespace := include "namespace" . -}}
-{{- $hostName := include "hostName" . }}
-
+{{if $ingress.enabled }}
+{{- if and $ingress.className (not (semverCompare ">=1.18-0" $top.Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey $ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set $ingress.annotations "kubernetes.io/ingress.class" $ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" $top.Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" $top.Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $namespace }}
+  name: {{ $fullName }}-{{ $ingress.name }}
+  {{- with $ingress.labels }}
   labels:
-    helmVersion: {{ .Chart.Version }}
-    helmAppVersion: {{ .Chart.AppVersion }}
-    helmName: {{ .Chart.Name }}
+      {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $ingress.annotations }}
   annotations:
-    kubernetes.io/ingress.class: nginx
-    #cert-manager.io/cluster-issuer: letsencrypt
-    #nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    #kubernetes.io/tls-acme: "true"
-    nginx.ingress.kubernetes.io/server-snippet: |
-      location ~* ^/(?<instance>[0-9]*)/([\S]+) {
-        proxy_pass http://{{ $fullName }}-$instance.{{ $fullName }}.{{ $namespace }}.svc.cluster.local:{{ .Values.internal.port }}/$2;
-      }
-    # nginx.ingress.kubernetes.io/server-snippets: |
-    #   location ~* "^/status" {
-    #     deny all;
-    #     return 403;
-    #   }    
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  #tls:
-  #- hosts:
-   # - {{ $hostName}}
-    #secretName: argocd-secret
+  {{- if and $ingress.className (semverCompare ">=1.18-0" $top.Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ $ingress.className }}
+  {{- end }}
+  {{- if $ingress.tls }}
+  tls:
+    {{- range $ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
   rules:
-  - host: {{ $hostName }}
-    http:
-      paths:
-      - backend:
-          service:
-            name: {{ $fullName }}-routing
-            port:
-              number: 80 # 443
-        path: /
-        pathType: Prefix
+    {{- range $ingress.hosts }}
+    - host: # {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if and .pathType (semverCompare ">=1.18-0" $top.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $top.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ .serviceName }}
+                port:
+                  {{- if .portName }}
+                  name: {{ .portName }}
+                  {{- end }}
+                  {{- if .port }}
+                  number: {{ .port }}
+                  {{- end }}
+              {{- else }}
+              serviceName: {{ .serviceName }}
+              servicePort: {{ .port }}
+              {{- end }}
+          {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}
