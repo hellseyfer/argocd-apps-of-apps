@@ -1,6 +1,6 @@
 # save the original value of .
 {{- $top := . -}}
-{{- $fullName := include "test-chart.fullname" . -}}
+
 # iterate over the ingress configurations
 {{- range $ingress := .Values.ingresses }}
 ---
@@ -19,7 +19,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-{{ $ingress.name }}
+  name: {{ $ingress.name }}
   {{- with $ingress.labels }}
   labels:
       {{- toYaml . | nindent 4 }}

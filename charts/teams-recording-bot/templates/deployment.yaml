@@ -1,13 +1,12 @@
 # save the original value of .
 {{- $top := . -}}
-{{- $fullName := include "test-chart.fullname" . -}}
 # iterate over the ingress configurations
 {{- range $deployment := .Values.deployments }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $fullName}}-{{ $deployment.name }}
+  name: {{ $deployment.name }}
 spec:
   {{- if not $top.Values.autoscaling.enabled }}
   replicas: {{ $deployment.replicas }}
