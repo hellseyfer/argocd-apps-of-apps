@@ -44,7 +44,7 @@ spec:
   {{- end }}
   rules:
     {{- range $ingress.hosts }}
-    - host: # {{ .host | quote }}
+    - host: {{ .host | quote }}
       http:
         paths:
           {{- range .paths }}
