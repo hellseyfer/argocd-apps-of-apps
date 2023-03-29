@@ -14,7 +14,7 @@ spec:
   publishNotReadyAddresses: true
   ports:
   - name: public
-    port: 443
+    port: 80 #443
     targetPort: {{ $.Values.internal.port }}
   selector:
     app: {{ $fullName }}

@@ -19,10 +19,10 @@ metadata:
     helmName: {{ .Chart.Name }}
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    kubernetes.io/tls-acme: "true"
+    #cert-manager.io/cluster-issuer: letsencrypt
+    #nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    #kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
       location ~* ^/(?<instance>[0-9]*)/([\S]+) {
         proxy_pass http://{{ $fullName }}-$instance.{{ $fullName }}.{{ $namespace }}.svc.cluster.local:{{ .Values.internal.port }}/$2;
@@ -33,10 +33,10 @@ metadata:
     #     return 403;
     #   }    
 spec:
-  tls:
-  - hosts:
-    - {{ $hostName}}
-    secretName: argocd-secret
+  #tls:
+  #- hosts:
+   # - {{ $hostName}}
+    #secretName: argocd-secret
   rules:
   - host: {{ $hostName }}
     http:
@@ -45,6 +45,6 @@ spec:
           service:
             name: {{ $fullName }}-routing
             port:
-              name: public
+              number: 80 # 443
         path: /
         pathType: Prefix

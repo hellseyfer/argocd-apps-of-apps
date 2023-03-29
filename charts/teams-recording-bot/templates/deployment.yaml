@@ -121,10 +121,10 @@ spec:
               fieldPath: metadata.name
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-      volumes:
-      - name: certificate
-        secret:
-          secretName: ingress-tls
+      #volumes:
+      #- name: certificate
+      #  secret:
+      #    secretName: ingress-tls
       imagePullSecrets:
       - name: acr-secret
   selector:

@@ -17,10 +17,10 @@ spec:
     port: 80
     targetPort: http
     protocol: TCP
-  - name: https
-    port: 443
-    targetPort: https
-    protocol: TCP
+  #- name: https
+   # port: 443
+    #targetPort: https
+    #protocol: TCP
 {{- range $i, $e := until (int $maxCount) }}
   - name: {{ $.Values.public.media | add $i }}-tcp
     port: {{ $.Values.public.media | add $i }}
