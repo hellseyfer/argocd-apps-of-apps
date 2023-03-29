@@ -26,7 +26,6 @@ internal:
 
 public:
   media: 28550
-  ip: 20.75.175.99
 
 node:
   target: win

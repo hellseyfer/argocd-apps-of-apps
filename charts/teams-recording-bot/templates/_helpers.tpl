@@ -37,12 +37,3 @@
     {{- fail "You need to specify image.domain" -}}
   {{- end -}}
 {{- end -}}
-
-{{/* Check if public.ip is set */}}
-{{- define "publicIP" -}}
-  {{- if .Values.public.ip -}}
-    {{- printf "%s" .Values.public.ip -}}
-  {{- else -}}
-    {{- fail "You need to specify public.ip" -}}
-  {{- end -}}
-{{- end -}}
